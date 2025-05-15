@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Sustainable Tracker</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="public/favicon.png">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- External Libraries -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Leaflet.js -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <i class="fas fa-leaf logo-icon"></i>
+        <h1>Living Sustainable Tracker</h1>
+      </div>
+      <nav class="nav-container" id="nav-container">
+        <div id="auth-links">
+          <a href="#" class="nav-link" id="login-link">Login</a>
+          <a href="#" class="nav-link" id="register-link">Register</a>
+        </div>
+        <div id="user-links" style="display: none;">
+          <a href="#" class="nav-link" id="dashboard-link">Dashboard</a>
+          <a href="#" class="nav-link" id="profile-link">Profile</a>
+          <a href="#" class="nav-link" id="logout-link">Logout</a>
+        </div>
+      </nav>
+      <button class="menu-toggle" id="menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Auth Forms Container -->
+      <section id="auth-container">
+        <!-- Login Form -->
+        <div class="form-container" id="login-form">
+          <h2>Login</h2>
+          <form id="user-login-form">
+            <div class="form-group">
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" required>
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+          </form>
+          <p class="form-switch">Don't have an account? <a href="#" id="switch-to-register">Register here</a></p>
+        </div>
+
+        <!-- Register Form -->
+        <div class="form-container" id="register-form" style="display: none;">
+          <h2>Register</h2>
+          <form id="user-register-form">
+            <div class="form-group">
+              <label for="register-username">Username</label>
+              <input type="text" id="register-username" required>
+            </div>
+            <div class="form-group">
+              <label for="register-email">Email</label>
+              <input type="email" id="register-email" required>
+            </div>
+            <div class="form-group">
+              <label for="register-password">Password</label>
+              <input type="password" id="register-password" required>
+            </div>
+            <div class="form-group">
+              <label for="register-confirm-password">Confirm Password</label>
+              <input type="password" id="register-confirm-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+          </form>
+          <p class="form-switch">Already have an account? <a href="#" id="switch-to-login">Login here</a></p>
+        </div>
+      </section>
+
+      <!-- Dashboard Section -->
+      <section id="dashboard-container" style="display: none;">
+        <div class="dashboard-header">
+          <h2>Sustainability Dashboard</h2>
+          <div class="dashboard-period-selector">
+            <select id="period-selector">
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Weather Widget -->
+        <div class="weather-widget-container">
+          <div class="weather-widget">
+            <h3>Live Weather</h3>
+            <div id="map-container"></div>
+            <div id="weather-info">
+              <p>Click on the map to get weather information</p>
+              <div id="weather-details" style="display: none;">
+                <div class="weather-location" id="weather-location"></div>
+                <div class="weather-data">
+                  <div class="weather-temp">
+                    <i class="fas fa-temperature-high"></i>
+                    <span id="temperature"></span>
+                  </div>
+                  <div class="weather-humidity">
+                    <i class="fas fa-tint"></i>
+                    <span id="humidity"></span>
+                  </div>
+                </div>
+                <div id="weather-description"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts and Statistics -->
+        <div class="dashboard-stats">
+          <div class="stats-card">
+            <h3>Resource Saving</h3>
+            <canvas id="resources-chart"></canvas>
+          </div>
+          <div class="stats-card">
+            <h3>Recycling</h3>
+            <canvas id="recycling-chart"></canvas>
+          </div>
+          <div class="stats-card">
+            <h3>Transportation</h3>
+            <canvas id="transportation-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Log New Action Form -->
+        <div class="action-form-container">
+          <h3>Log New Sustainable Action</h3>
+          <form id="log-action-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="energy-saved">Energy Saved (kWh)</label>
+                <input type="number" id="energy-saved" min="0" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="water-saved">Water Saved (liters)</label>
+                <input type="number" id="water-saved" min="0" step="0.1">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Recycled Items</label>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="plastic-recycled">Plastic</label>
+                  <input type="number" id="plastic-recycled" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="paper-recycled">Paper</label>
+                  <input type="number" id="paper-recycled" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="metal-recycled">Metal</label>
+                  <input type="number" id="metal-recycled" min="0">
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Transportation</label>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="biking">
+                  <label for="biking">Biking</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="public-transport">
+                  <label for="public-transport">Public Transport</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="carpooling">
+                  <label for="carpooling">Carpooling</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="walking-distance">Walking Distance (km)</label>
+                <input type="number" id="walking-distance" min="0" step="0.1">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="action-notes">Notes</label>
+              <textarea id="action-notes" rows="3" maxlength="500"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Save Action</button>
+          </form>
+        </div>
+
+        <!-- Recent Logs -->
+        <div class="recent-logs">
+          <h3>Recent Logs</h3>
+          <div id="logs-container">
+            <!-- Logs will be populated here -->
+          </div>
+        </div>
+
+        <!-- Sustainability Tips -->
+        <div class="tips-container">
+          <h3>Sustainability Tips</h3>
+          <div id="tips-content">
+            <!-- Tips will be populated here -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; 2023 Living Sustainable Tracker | College Project</p>
+    </footer>
+  </div>
+
+  <!-- Notification Container -->
+  <div id="notification-container"></div>
+
+  <!-- JavaScript -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tips.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html> 
